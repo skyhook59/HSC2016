@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Consensus Picks</title>
+<link rel="stylesheet" type="text/css" href="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/css/bootstrap.min.css">
+<link href="http://getbootstrap.com/2.3.2/assets/css/bootstrap-responsive.css" rel="stylesheet">
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+
+
+<?php
+//variable for database connection
+
+require "../connections.php";
+//$week = 4;
+
+//open DB connection
+$con = mysql_connect($host,$dbusername,$password);
+if (!$con)
+{
+	die('Could not connect: ' . mysql_error());
+}
+mysql_select_db("$database", $con);
+
+
+echo "<h2> This Week's Consensus Picks</h2>";
+echo "<div class='table-responsive table-condensed'>";
+	echo "<table width = '200' id ='consensuspicks' class='table-striped'>";
+	echo "<thead style='font-weight:bold';>";
+	echo "<tr><td>"."Team"."</td><td>"."Times Picked"."</td><td>";
+	echo "</thead>";
+	echo "<tbody>";
+// display the current totals in a table:
+$query = "SELECT pick, count(pick) AS 'Total' FROM Picks WHERE week = $week GROUP BY pick ORDER BY count(pick) DESC LIMIT 5";
+$result = mysql_query($query);
+
+while( ($row = mysql_fetch_array($result)))
+{
+	echo "<tr><td>";
+	echo $row['pick'];
+	echo "</td><td>";
+	echo $row['Total'];
+	echo "</td></tr>";
+}
+echo '</tbody></table></div>';
+
+
+echo "<h2> Last Week's Consensus Picks</h2>";
+echo "<div class='table-responsive table-condensed'>";
+	echo "<table width = '200' id ='consensuspicks' class='table-striped'>";
+	echo "<thead style='font-weight:bold';>";
+	echo "<tr><td>"."Team"."</td><td>"."Picked"."</td><td>"."Points"."</td><td>";
+	echo "</thead>";
+	echo "<tbody>";
+// display the current totals in a table:
+$query = "SELECT pick, count(pick) AS 'Total', winner FROM picksview WHERE week = ($week -1) GROUP BY pick ORDER BY count(pick) DESC LIMIT 5";
+$result = mysql_query($query);
+
+while( ($row = mysql_fetch_array($result)))
+{
+	echo "<tr><td>";
+	echo $row['pick'];
+	echo "</td><td>";
+	echo $row['Total'];
+	echo "</td><td>";
+	echo $row['winner'];
+	echo "</td></tr>";
+}
+echo '</tbody></table></div>';
+
+echo "<h2> Seasons Consensus Record</h2>";
+echo "<div class='table-responsive table-condensed'>";
+	echo "<table width = '200' id ='consensusrecord' class='table-striped'>";
+	echo "<thead style='font-weight:bold';>";
+	echo "<tr><td>"."Week"."</td><td>"."Picked"."</td><td>"."Correct"."</td><td>";
+	echo "</thead>";
+	echo "<tbody>";
+// display the current totals in a table:
+$query = "SELECT week, pick, count(pick) AS 'Total', winner FROM picksview  GROUP BY week, pick ORDER BY week, count(pick) DESC";
+$result = mysql_query($query);
+
+$lastweek = 0;
+$i=0;
+while ($row = mysql_fetch_array($result))
+{
+	if ($lastweek == $row['week'])
+		{
+			$i++;
+		}
+		else {$lastweek = $row['week'];
+		
+			$i=0;
+		}	
+	if ($i < 5)
+		{	
+	echo "<tr><td>";
+	echo $row['week'];
+	echo "</td><td>";
+	echo $row['pick'];
+	echo "</td><td>";
+	echo $row['winner'];
+	echo "</td></tr>";
+		}
+	$lastweek = $row['week'];
+}
+echo '</tbody></table></div>';
+
+// close DB connection
+mysql_close($con);
+
+?>
