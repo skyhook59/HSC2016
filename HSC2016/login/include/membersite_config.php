@@ -15,7 +15,7 @@ $fgmembersite->SetAdminEmail('steve@mcph.ee');
 //by itself on submitting register.php for the first time
 $fgmembersite->InitDB(/*hostname*/'localhost',
                       /*username*/'skyho_web',
-                      /*password*/'pedro123',
+                      /*password*/'xxxxx',
                       /*database name*/'skyhook59_supercontest',
                       /*table name*/'users');
 
